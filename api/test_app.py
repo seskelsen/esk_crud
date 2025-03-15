@@ -220,3 +220,39 @@ def test_create_duplicate_cnpj(client):
     assert duplicate_response.status_code == 500
     assert data['success'] is False
     assert 'CNPJ já cadastrado' in data['message']
+
+def test_home(client):
+    rv = client.get('/')
+    assert rv.status_code == 200
+    assert b'Welcome' in rv.data
+
+def test_get_suppliers(client):
+    rv = client.get('/suppliers')
+    assert rv.status_code == 200
+    assert b'suppliers' in rv.data
+
+def test_add_supplier(client):
+    new_supplier = {
+        'name': 'Test Supplier',
+        'cnpj': '00.000.000/0000-00',
+        'email': 'test@supplier.com',
+        'phone': '(00) 00000-0000'
+    }
+    rv = client.post('/suppliers', json=new_supplier)
+    assert rv.status_code == 201
+    assert b'Test Supplier' in rv.data
+
+def test_update_supplier(client):
+    updated_supplier = {
+        'name': 'Updated Supplier',
+        'cnpj': '00.000.000/0000-00',
+        'email': 'updated@supplier.com',
+        'phone': '(00) 00000-0000'
+    }
+    rv = client.put('/suppliers/1', json=updated_supplier)
+    assert rv.status_code == 200
+    assert b'Updated Supplier' in rv.data
+
+def test_delete_supplier(client):
+    rv = client.delete('/suppliers/1')
+    assert rv.status_code == 204

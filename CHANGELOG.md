@@ -5,6 +5,19 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/),
 e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.3.0] - 2025-03-15
+
+### Adicionado
+
+* Arquivo `.env.example` com variáveis de ambiente necessárias
+* Arquivo `CONTRIBUTING.md` com diretrizes de contribuição
+* Arquivo `LICENSE` com a licença MIT
+* Arquivo `CODE_OF_CONDUCT.md` com código de conduta para contribuidores
+
+### Atualizado
+
+* Atualização do copyright para 2025 ESKEL Consulting
+
 ## [1.2.0] - 2024-02-26
 
 ### Adicionado

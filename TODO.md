@@ -46,6 +46,9 @@
    - Testes E2E com Selenium ou Cypress
    - Testes de performance
    - Mocks e fixtures padronizados
+   - Testes unitários para rotas da API
+   - Testes unitários para lógica de negócios
+   - Testes automatizados de frontend com Cypress
 
 2. [ ] Implementar análise estática
    - ESLint para JavaScript
@@ -121,26 +124,93 @@
 
 ## Priorização
 
-### Fase 1 - Fundação Segura (1-2 meses)
+### Fase 1 - Fundamentos do ERP (1-2 meses)
 - Implementar autenticação e autorização
-- Melhorar validação e sanitização
-- Refatorar para arquitetura escalável
-- Setup inicial de CI/CD
+- Adicionar gestão de usuários
+- Adicionar gestão de produtos
+- Adicionar gestão de vendas
+- Adicionar gestão de estoque
 
-### Fase 2 - Robustez (2-3 meses)
+### Fase 2 - Interface e Qualidade (2-3 meses)
+- Criar dashboard
+- Melhorar interface do usuário
+- Adicionar testes automatizados
+- Melhorar documentação
+
+### Fase 3 - Robustez e Segurança (2-3 meses)
+- Melhorar validação e sanitização
+- Configurar headers de segurança
+- Refatorar para arquitetura escalável
 - Migrar para banco de dados robusto
 - Implementar cache
-- Melhorar cobertura de testes
-- Configurar monitoramento
 
-### Fase 3 - Qualidade e Escalabilidade (2-3 meses)
-- Implementar análise estática
+### Fase 4 - DevOps e Processo (3-4 meses)
+- Setup inicial de CI/CD
+- Monitoramento
 - Containerização
-- Documentação e padrões
-- Melhorias na interface
-
-### Fase 4 - Recursos Avançados (3-4 meses)
-- Recursos adicionais
-- Integrações
 - Gestão de projeto
+- Documentação de processos
 - Treinamento e onboarding
+
+# Novas Tarefas para Transformar em ERP
+
+## 🔒 Segurança (Alta Prioridade)
+
+1. [ ] Implementar autenticação e autorização
+   - Sistema de login
+   - Controle de acesso baseado em funções (RBAC)
+   - Proteção contra CSRF
+
+## 🏗️ Arquitetura (Alta Prioridade)
+
+1. [ ] Adicionar gestão de usuários
+   - CRUD de usuários
+   - Banco de dados para usuários
+
+2. [ ] Adicionar gestão de produtos
+   - CRUD de produtos
+   - Banco de dados para produtos
+
+3. [ ] Adicionar gestão de vendas
+   - Registro de vendas
+   - Geração de faturas
+   - Relatórios de vendas
+
+4. [ ] Adicionar gestão de estoque
+   - Entrada e saída de produtos
+   - Banco de dados para estoque
+
+## 💡 Funcionalidades (Média Prioridade)
+
+1. [ ] Criar dashboard
+   - Gráficos de vendas
+   - Informações de estoque
+
+2. [ ] Melhorar interface do usuário
+   - Frameworks modernos (React, Vue.js)
+
+## 🧪 Qualidade de Código (Média Prioridade)
+
+1. [ ] Adicionar testes automatizados
+   - Cobertura de novas funcionalidades
+
+## 📋 Processo (Baixa Prioridade)
+
+1. [ ] Melhorar documentação
+   - Instruções de instalação
+   - Uso e contribuição
+
+## Priorização
+
+### Fase 1 - Fundamentos do ERP (1-2 meses)
+- Implementar autenticação e autorização
+- Adicionar gestão de usuários
+- Adicionar gestão de produtos
+- Adicionar gestão de vendas
+- Adicionar gestão de estoque
+
+### Fase 2 - Interface e Qualidade (2-3 meses)
+- Criar dashboard
+- Melhorar interface do usuário
+- Adicionar testes automatizados
+- Melhorar documentação

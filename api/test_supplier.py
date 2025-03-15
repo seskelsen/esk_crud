@@ -22,6 +22,10 @@ def supplier_instance():
     except:
         pass
 
+@pytest.fixture
+def supplier():
+    return Supplier(name='Test Supplier', cnpj='00.000.000/0000-00', email='test@supplier.com', phone='(00) 00000-0000')
+
 def test_create_supplier(supplier_instance):
     """Testa a criação de um fornecedor"""
     supplier_data = {
@@ -202,3 +206,22 @@ def test_data_persistence(supplier_instance):
     assert loaded is not None
     assert loaded['id'] == created['id']
     assert loaded['name'] == supplier_data['name']
+
+def test_supplier_creation(supplier):
+    assert supplier.name == 'Test Supplier'
+    assert supplier.cnpj == '00.000.000/0000-00'
+    assert supplier.email == 'test@supplier.com'
+    assert supplier.phone == '(00) 00000-0000'
+
+def test_supplier_update(supplier):
+    supplier.name = 'Updated Supplier'
+    supplier.email = 'updated@supplier.com'
+    assert supplier.name == 'Updated Supplier'
+    assert supplier.email == 'updated@supplier.com'
+
+def test_supplier_to_dict(supplier):
+    supplier_dict = supplier.to_dict()
+    assert supplier_dict['name'] == 'Test Supplier'
+    assert supplier_dict['cnpj'] == '00.000.000/0000-00'
+    assert supplier_dict['email'] == 'test@supplier.com'
+    assert supplier_dict['phone'] == '(00) 00000-0000'
