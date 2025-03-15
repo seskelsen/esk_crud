@@ -1,0 +1,267 @@
+openapi: 3.0.3
+info:
+  title: API de Fornecedores
+  description: API para gerenciamento de fornecedores com operações CRUD
+  version: 1.2.0
+  contact:
+    name: Suporte Técnico
+    email: suporte@exemplo.com
+
+servers:
+  - url: http://localhost:5000
+    description: Servidor de desenvolvimento
+
+paths:
+  /:
+    get:
+      summary: Lista todos os fornecedores
+      description: Retorna a lista completa de fornecedores cadastrados
+      tags:
+        - Fornecedores
+      responses:
+        '200':
+          description: Lista de fornecedores recuperada com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupplierListResponse'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    
+    post:
+      summary: Cria um novo fornecedor
+      description: Adiciona um novo fornecedor ao sistema
+      tags:
+        - Fornecedores
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SupplierInput'
+      responses:
+        '200':
+          description: Fornecedor criado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupplierResponse'
+        '400':
+          description: Dados inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: ID do fornecedor
+        schema:
+          type: string
+    
+    get:
+      summary: Obtém um fornecedor específico
+      description: Retorna os detalhes de um fornecedor pelo ID
+      tags:
+        - Fornecedores
+      responses:
+        '200':
+          description: Fornecedor encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupplierResponse'
+        '404':
+          description: Fornecedor não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    
+    put:
+      summary: Atualiza um fornecedor
+      description: Atualiza os dados de um fornecedor existente
+      tags:
+        - Fornecedores
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SupplierInput'
+      responses:
+        '200':
+          description: Fornecedor atualizado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupplierResponse'
+        '400':
+          description: Dados inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Fornecedor não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    
+    delete:
+      summary: Remove um fornecedor
+      description: Exclui um fornecedor do sistema
+      tags:
+        - Fornecedores
+      responses:
+        '200':
+          description: Fornecedor excluído com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteResponse'
+        '404':
+          description: Fornecedor não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    Supplier:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Identificador único do fornecedor
+          example: sup_123e4567-e89b-12d3-a456-426614174000
+        name:
+          type: string
+          description: Nome da empresa
+          example: Empresa ABC Ltda
+        cnpj:
+          type: string
+          description: CNPJ da empresa (apenas números)
+          pattern: ^\d{14}$
+          example: '12345678000190'
+        email:
+          type: string
+          format: email
+          description: Email de contato
+          example: contato@empresa.com.br
+        phone:
+          type: string
+          description: Telefone (apenas números)
+          pattern: ^\d{10,11}$
+          example: '11999999999'
+      required:
+        - name
+        - cnpj
+        - email
+        - phone
+    
+    SupplierInput:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Nome da empresa
+        cnpj:
+          type: string
+          description: CNPJ da empresa (apenas números)
+        email:
+          type: string
+          format: email
+          description: Email de contato
+        phone:
+          type: string
+          description: Telefone (apenas números)
+      required:
+        - name
+        - cnpj
+        - email
+        - phone
+    
+    SupplierResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Indica se a operação foi bem-sucedida
+        data:
+          $ref: '#/components/schemas/Supplier'
+        message:
+          type: string
+          description: Mensagem descritiva (opcional)
+    
+    SupplierListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Indica se a operação foi bem-sucedida
+        data:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/Supplier'
+          description: Dicionário de fornecedores indexado por ID
+        message:
+          type: string
+          description: Mensagem descritiva (opcional)
+    
+    DeleteResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Indica se a exclusão foi bem-sucedida
+        message:
+          type: string
+          description: Mensagem de confirmação ou erro
+    
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Sempre false para erros
+        message:
+          type: string
+          description: Descrição do erro
+
+tags:
+  - name: Fornecedores
+    description: Operações relacionadas a fornecedores

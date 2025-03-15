@@ -1,0 +1,200 @@
+/* Estilos personalizados para o Sistema de Gestão de Fornecedores */
+
+:root {
+  --primary-color: #0d6efd;
+  --primary-hover: #0b5ed7;
+  --secondary-color: #6c757d;
+  --light-color: #f8f9fa;
+  --dark-color: #212529;
+  --success-color: #198754;
+  --danger-color: #dc3545;
+  --warning-color: #ffc107;
+  --border-radius: 0.375rem;
+  --box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
+  --transition: all .2s ease-in-out;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: var(--dark-color);
+  background-color: #f5f7fa;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Navbar styling */
+.navbar {
+  padding: .75rem 1rem;
+}
+
+.navbar-brand {
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+/* Card styling */
+.card {
+  border: none;
+  border-radius: var(--border-radius);
+  transition: var(--transition);
+}
+
+.card:hover {
+  box-shadow: 0 .5rem 1rem rgba(0,0,0,.1);
+}
+
+/* Table styling */
+.table th {
+  font-weight: 600;
+  border-top: none;
+}
+
+.table-hover tbody tr:hover {
+  background-color: rgba(13, 110, 253, 0.05);
+}
+
+/* Button styling */
+.btn {
+  font-weight: 500;
+  padding: .375rem .75rem;
+  border-radius: var(--border-radius);
+  transition: var(--transition);
+}
+
+.btn-primary {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-hover);
+  border-color: var(--primary-hover);
+}
+
+/* Form controls */
+.form-control, .input-group-text {
+  border-radius: var(--border-radius);
+}
+
+.form-control:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+/* Modal styling */
+.modal-content {
+  border-radius: var(--border-radius);
+}
+
+.modal-header, .modal-footer {
+  padding: 1rem;
+}
+
+/* Animation effects */
+.fade-in {
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Status badges */
+.badge-status {
+  font-size: 0.75rem;
+  padding: 0.35em 0.65em;
+  border-radius: 50rem;
+}
+
+.badge-active {
+  background-color: var(--success-color);
+  color: white;
+}
+
+.badge-inactive {
+  background-color: var(--secondary-color);
+  color: white;
+}
+
+/* Action buttons in table */
+.btn-action {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: var(--transition);
+}
+
+/* Footer */
+.footer {
+  margin-top: auto;
+  font-size: 0.875rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .container {
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+  }
+  
+  .table-responsive {
+    border: none;
+  }
+}
+
+/* Loading animation */
+.spinner-pulse {
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  background: var(--primary-color);
+  animation: pulse 1.2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(1.2);
+    opacity: 0;
+  }
+}
+
+/* Loading overlay */
+#loading-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(255, 255, 255, 0.9);
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
+    transition: none;
+    pointer-events: all;
+}
+
+#loading-overlay .spinner-border {
+    width: 3rem;
+    height: 3rem;
+}
+
+#loading-overlay.show {
+    display: flex !important;
+}
+
+#loading-overlay.hide {
+    display: none !important;
+}

@@ -1,0 +1,65 @@
+# Changelog
+
+Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
+
+O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/),
+e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
+
+## [1.2.0] - 2024-02-26
+
+### Adicionado
+
+* Formatação automática de CNPJ (XX.XXX.XXX/XXXX-XX)
+* Formatação automática de telefone para números fixos (XX XXXX-XXXX) e celulares (XX XXXXX-XXXX)
+
+### Melhorado
+
+* Interface do usuário com máscaras de entrada para CNPJ e telefone
+* Validação e formatação de dados antes do envio ao servidor
+
+## [1.1.0] - 2024-02-25
+
+### Adicionado
+
+* Documentação OpenAPI (Swagger) para todas as rotas da API
+* Interface Swagger UI para teste interativo da API
+* Logs detalhados para operações de exclusão
+* Tratamento aprimorado de IDs no backend
+
+### Melhorado
+
+* Sincronização entre chaves e IDs no armazenamento JSON
+* Feedback visual no frontend para operações de CRUD
+* Validação de dados no backend
+* Mensagens de erro mais descritivas
+
+## [1.0.0] - 2024-02-14
+
+### Adicionado
+
+* Implementação inicial do CRUD de fornecedores
+* Backend em Python usando Flask e armazenamento em JSON
+* Frontend em HTML/JS usando Bootstrap 5
+* Testes unitários para backend usando pytest
+* Funcionalidades:
+  * Listagem de fornecedores
+  * Cadastro de novo fornecedor
+  * Edição de fornecedor existente
+  * Exclusão de fornecedor
+  * Validação de formulários
+  * Confirmação de exclusão
+  * Mensagens de feedback para o usuário
+
+### Funcionalidades
+
+* API RESTful para gerenciamento de fornecedores
+* Interface responsiva com Bootstrap
+* Armazenamento em arquivo JSON
+* Testes automatizados
+* CORS habilitado para desenvolvimento local
+
+### Correções
+
+* Ajuste no processo de exclusão de fornecedores
+* Correção na geração de IDs únicos
+* Melhorias no tratamento de erros e logging

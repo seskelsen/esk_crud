@@ -1,0 +1,44 @@
+{
+    "sup_c4dffbb0-9260-49c8-b24b-c73411161404": {
+        "id": "sup_c4dffbb0-9260-49c8-b24b-c73411161404",
+        "name": "Waltinho",
+        "cnpj": "13215464654645",
+        "email": "ton@sincronica.com.br",
+        "phone": "6454646464"
+    },
+    "sup_16811b79-cbe0-445c-b006-c18dde7cdcbb": {
+        "id": "sup_16811b79-cbe0-445c-b006-c18dde7cdcbb",
+        "name": "Eskel Automation",
+        "cnpj": "13215464654645",
+        "email": "seskelsen@gmail.com",
+        "phone": "11984034908"
+    },
+    "sup_d077d194-2328-45e6-a34c-1d3e0ea68529": {
+        "id": "sup_d077d194-2328-45e6-a34c-1d3e0ea68529",
+        "name": "Eskel Consultoria",
+        "cnpj": "13215345345555",
+        "email": "renato@sincronica.com.br",
+        "phone": "1146200023"
+    },
+    "sup_6b3abd5e-5322-414a-a1a2-3757c666c39e": {
+        "id": "sup_6b3abd5e-5322-414a-a1a2-3757c666c39e",
+        "name": "Robert",
+        "cnpj": "12354654864685",
+        "email": "robert@sincronica.com.br",
+        "phone": "11989891245"
+    },
+    "sup_733e8f2a-567c-4008-806a-4b10e3649f5a": {
+        "id": "sup_733e8f2a-567c-4008-806a-4b10e3649f5a",
+        "name": "Sigmar Eskelsen",
+        "cnpj": "12345648978784",
+        "email": "sigmar@sincronica.com.br",
+        "phone": "11984034908"
+    },
+    "sup_30c4d16e-2211-407c-be95-8ae932998818": {
+        "id": "sup_30c4d16e-2211-407c-be95-8ae932998818",
+        "name": "Teste Ltda",
+        "cnpj": "12345678901234",
+        "email": "teste@empresa.com",
+        "phone": "11999999999"
+    }
+}
