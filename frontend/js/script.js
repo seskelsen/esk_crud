@@ -6,6 +6,13 @@ let currentSearchTerm = '';
 let currentSortField = 'name';
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Check if user is logged in
+    if (!isLoggedIn()) {
+        window.location.href = 'login.html';
+        return;
+    }
+
+    setupUI();
     modal = new bootstrap.Modal(document.getElementById('supplierModal'));
     
     // Inicializar componentes
@@ -14,6 +21,40 @@ document.addEventListener('DOMContentLoaded', () => {
     // Carregar dados
     loadSuppliers();
 });
+
+function setupUI() {
+    // Setup user info in navbar
+    const user = JSON.parse(localStorage.getItem('user'));
+    const navbarNav = document.getElementById('navbarNav');
+    
+    // Add user menu to navbar
+    const userMenu = document.createElement('ul');
+    userMenu.className = 'navbar-nav ms-auto';
+    userMenu.innerHTML = `
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                <i class="bi bi-person-circle me-1"></i>${user.username}
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end">
+                <li><a class="dropdown-item" href="#" onclick="logout()">
+                    <i class="bi bi-box-arrow-right me-2"></i>Sair
+                </a></li>
+            </ul>
+        </li>
+    `;
+    navbarNav.appendChild(userMenu);
+}
+
+function logout() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    window.location.href = 'login.html';
+}
+
+function isLoggedIn() {
+    const token = localStorage.getItem('token');
+    return !!token;
+}
 
 function showLoading() {
     const overlay = document.getElementById('loading-overlay');
@@ -214,7 +255,20 @@ function openModal(supplier = null) {
 async function loadSuppliers() {
     try {
         showLoading();
-        const response = await fetch(`${API_URL}/`);
+        const response = await fetch(`${API_URL}/suppliers`, {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        });
+
+        if (response.status === 401) {
+            // Token expired or invalid
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = 'login.html';
+            return;
+        }
+
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -350,16 +404,25 @@ async function saveSupplier() {
             phone: phoneDigits
         };
 
-        const url = id ? `${API_URL}/${id}` : `${API_URL}/`;
+        const url = id ? `${API_URL}/suppliers/${id}` : `${API_URL}/suppliers`;
         const method = id ? 'PUT' : 'POST';
         
         const response = await fetch(url, {
             method,
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
             },
             body: JSON.stringify(data)
         });
+
+        if (response.status === 401) {
+            // Token expired or invalid
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = 'login.html';
+            return;
+        }
         
         const responseData = await response.json();
         
@@ -400,15 +463,30 @@ async function deleteSupplier(id) {
         if (result.isConfirmed) {
             showLoading();
             try {
-                const response = await fetch(`${API_URL}/${id}`, {
+                const response = await fetch(`${API_URL}/suppliers/${id}`, {
                     method: 'DELETE',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
                     }
                 });
 
-                const data = await response.json();
+                if (response.status === 401) {
+                    // Token expired or invalid
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    window.location.href = 'login.html';
+                    return;
+                }
 
+                // Para status 204 não tem corpo JSON
+                if (response.status === 204) {
+                    showSuccessMessage('Fornecedor excluído com sucesso!');
+                    await loadSuppliers();
+                    return;
+                }
+
+                const data = await response.json();
                 if (!response.ok) {
                     throw new Error(data.message || `HTTP error! status: ${response.status}`);
                 }

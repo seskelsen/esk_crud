@@ -40,5 +40,19 @@
         "cnpj": "12345678901234",
         "email": "teste@empresa.com",
         "phone": "11999999999"
+    },
+    "sup_8a2951e9-c3e1-4885-9cb3-85accf31d6ec": {
+        "id": "sup_8a2951e9-c3e1-4885-9cb3-85accf31d6ec",
+        "cnpj": "00000000000000",
+        "email": "test@supplier.com",
+        "name": "Test Supplier",
+        "phone": "00000000000"
+    },
+    "sup_63c58417-0bf4-4157-885f-9eb756bdecb0": {
+        "id": "sup_63c58417-0bf4-4157-885f-9eb756bdecb0",
+        "email": "teste@fornecedor.com",
+        "phone": "11999999999",
+        "name": "Fornecedor Teste",
+        "cnpj": "98765432101234"
     }
 }

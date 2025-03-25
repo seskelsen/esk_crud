@@ -1,0 +1,10 @@
+{
+    "usr_b000069d-18ec-46af-a10e-9637fd8c711c": {
+        "id": "usr_b000069d-18ec-46af-a10e-9637fd8c711c",
+        "username": "admin",
+        "email": "admin@example.com",
+        "password": "$2b$12$guqZ2q4fpTsOVapTOEm4m.lTqHxo27O09pZ7OhjYEerYfmMP7Tx5u",
+        "role": "admin",
+        "active": true
+    }
+}

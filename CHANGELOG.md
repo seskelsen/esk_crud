@@ -76,3 +76,24 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 * Ajuste no processo de exclusão de fornecedores
 * Correção na geração de IDs únicos
 * Melhorias no tratamento de erros e logging
+
+## [1.1.0] - 2025-03-25
+
+### Adicionado
+
+- Autenticação JWT para login e registro de usuários.
+- Controle de acesso baseado em funções (RBAC).
+- Documentação da API com Swagger UI.
+- Página de login no frontend.
+- Redirecionamento da raiz do servidor para o frontend.
+- Suporte para servir arquivos estáticos da pasta `frontend`.
+
+### Alterado
+
+- Atualização do `requirements.txt` para incluir `flask-swagger-ui`.
+- Melhorias na estrutura do frontend para suportar autenticação.
+
+### Corrigido
+
+- Problemas de conflito de rotas no backend.
+- Erro ao acessar o Swagger UI devido à falta do arquivo JSON.

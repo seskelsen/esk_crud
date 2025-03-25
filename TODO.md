@@ -42,6 +42,7 @@
 ## 🧪 Qualidade de Código (Média Prioridade)
 
 1. [ ] Melhorar cobertura de testes
+   - NOTA: Atualmente não existem testes automatizados. A implementação completa será feita na Fase 2.
    - Testes de integração
    - Testes E2E com Selenium ou Cypress
    - Testes de performance
@@ -134,7 +135,7 @@
 ### Fase 2 - Interface e Qualidade (2-3 meses)
 - Criar dashboard
 - Melhorar interface do usuário
-- Adicionar testes automatizados
+- Adicionar testes automatizados (NOTA: Sistema atualmente sem testes - implementação completa planejada)
 - Melhorar documentação
 
 ### Fase 3 - Robustez e Segurança (2-3 meses)
@@ -214,3 +215,20 @@
 - Melhorar interface do usuário
 - Adicionar testes automatizados
 - Melhorar documentação
+
+# TODO
+
+## Concluído
+- [x] Implementar autenticação JWT.
+- [x] Adicionar controle de acesso baseado em funções (RBAC).
+- [x] Criar página de login no frontend.
+- [x] Configurar Swagger UI para documentação da API.
+- [x] Redirecionar a raiz do servidor para o frontend.
+- [x] Atualizar `requirements.txt` com dependências recentes.
+
+## Próximas Tarefas
+- [ ] Melhorar a interface do usuário no frontend.
+- [ ] Adicionar testes automatizados para novas funcionalidades.
+- [ ] Implementar paginação na listagem de fornecedores.
+- [ ] Melhorar a validação de dados no backend.
+- [ ] Configurar deploy automatizado com CI/CD.

@@ -1,16 +1,18 @@
 # Sistema de Gestão de Fornecedores
 
-Sistema web para gerenciamento de fornecedores com Frontend em HTML/CSS/JavaScript e Backend em Python/Flask.
+## Visão Geral
+Este é um sistema de gestão de fornecedores que permite:
+- Gerenciar fornecedores (CRUD completo)
+- Autenticação e autorização com JWT
+- Controle de acesso baseado em funções (RBAC)
+- Documentação da API com Swagger
 
 ## Funcionalidades
-
-- Listagem de fornecedores com ordenação e busca
-- Cadastro de novos fornecedores
-- Edição de fornecedores existentes
-- Exclusão de fornecedores
-- Validação de dados (CNPJ, email, telefone)
-- Interface responsiva
-- Feedback visual para todas as operações
+- **Autenticação JWT**: Login e registro de usuários com tokens JWT.
+- **Controle de Acesso**: Apenas administradores podem gerenciar usuários.
+- **Gestão de Fornecedores**: CRUD completo para fornecedores.
+- **Swagger UI**: Documentação interativa da API.
+- **Frontend**: Interface web para gerenciar fornecedores.
 
 ## Tecnologias Utilizadas
 
@@ -31,62 +33,62 @@ Sistema web para gerenciamento de fornecedores com Frontend em HTML/CSS/JavaScri
 - PyYAML
 
 ## Requisitos
-
-- Python 3.12 ou superior
-- Navegador web moderno
-- Conexão com internet (para carregar CDNs)
+- Python 3.12+
+- Node.js (opcional, para desenvolvimento do frontend)
 
 ## Instalação
-
 1. Clone o repositório:
-```bash
-git clone [url-do-repositorio]
-cd esk_crud
-```
+   ```bash
+   git clone https://github.com/seu-usuario/sistema-gestao-fornecedores.git
+   cd sistema-gestao-fornecedores
+   ```
 
 2. Crie e ative um ambiente virtual:
-```bash
-python -m venv .venv
-.venv\Scripts\activate  # Windows
-source .venv/bin/activate  # Linux/Mac
-```
+   ```bash
+   python -m venv venv
+   source venv/bin/activate   # Linux/Mac
+   venv\Scripts\activate    # Windows
+   ```
 
 3. Instale as dependências:
-```bash
-pip install -r requirements.txt
-```
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-## Executando o Sistema
+4. Inicie o servidor:
+   ```bash
+   python server.py
+   ```
 
-1. Inicie o servidor backend:
-```bash
-cd api
-python -m flask run --debug
-```
-
-2. Abra o arquivo `frontend/index.html` em um navegador web
-
-O sistema estará disponível em `http://localhost:5000` (API) e você pode acessar o frontend diretamente pelo arquivo HTML.
+5. Acesse o sistema no navegador:
+   - Frontend: [http://localhost:5000](http://localhost:5000)
+   - Swagger UI: [http://localhost:5000/api/docs](http://localhost:5000/api/docs)
 
 ## Estrutura do Projeto
-
 ```
-esk_crud/
+.
 ├── api/
-│   ├── app.py            # Aplicação Flask principal
-│   ├── supplier.py       # Classe de modelo para fornecedores
-│   ├── test_app.py      # Testes da API
-│   └── test_supplier.py # Testes da classe Supplier
-├── frontend/
-│   ├── index.html       # Página principal
-│   ├── css/
-│   │   └── styles.css   # Estilos customizados
-│   └── js/
-│       └── script.js    # JavaScript principal
+│   ├── app.py               # Configuração principal do Flask
+│   ├── openapi.yaml         # Especificação OpenAPI
+│   ├── supplier.py          # Lógica de fornecedores
+│   ├── user.py              # Lógica de usuários
+│   ├── test_app.py          # Testes para app.py
+│   ├── test_supplier.py     # Testes para supplier.py
+│   └── __pycache__/         # Arquivos compilados
 ├── db/
-│   └── suppliers.json   # Banco de dados JSON
-├── requirements.txt     # Dependências Python
-└── README.md           # Esta documentação
+│   ├── suppliers.json       # Banco de dados de fornecedores
+│   └── users.json           # Banco de dados de usuários
+├── frontend/
+│   ├── index.html           # Página principal
+│   ├── login.html           # Página de login
+│   ├── css/
+│   │   └── styles.css       # Estilos personalizados
+│   └── js/
+│       ├── auth.js          # Lógica de autenticação
+│       └── script.js        # Lógica principal do frontend
+├── requirements.txt         # Dependências do Python
+├── server.py                # Inicia o servidor Flask
+└── README.md                # Documentação do sistema
 ```
 
 ## Desenvolvimento
@@ -97,17 +99,13 @@ esk_crud/
 - Documentação: Swagger UI disponível em `/swagger-ui`
 
 ## Testes
-
-Execute os testes usando pytest:
+Para rodar os testes automatizados:
 ```bash
-cd api
-python -m pytest
+pytest
 ```
 
 ## Contribuição
+Contribuições são bem-vindas! Leia o arquivo `CONTRIBUTING.md` para mais informações.
 
-1. Fork o projeto
-2. Crie uma branch para sua feature (`git checkout -b feature/nova-feature`)
-3. Commit suas mudanças (`git commit -am 'Adiciona nova feature'`)
-4. Push para a branch (`git push origin feature/nova-feature`)
-5. Crie um Pull Request
+## Licença
+Este projeto está licenciado sob a licença MIT. Veja o arquivo `LICENSE` para mais detalhes.
