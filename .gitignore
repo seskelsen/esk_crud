@@ -1,3 +1,5 @@
+# Arquivo privado com segredos e URIs
+private.txt
 # Python
 __pycache__/
 *.pyc
