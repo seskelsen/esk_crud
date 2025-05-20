@@ -16,8 +16,21 @@ import os
 import yaml
 
 # Configurar logging
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.StreamHandler(),
+    ]
+)
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
+# Log handler para werkzeug
+werkzeug_logger = logging.getLogger('werkzeug')
+werkzeug_logger.setLevel(logging.DEBUG)
+
+logger.info("Inicializando aplicação Flask com MongoDB")
 
 # Configurar Swagger
 SWAGGER_URL = '/api/docs'
@@ -29,12 +42,13 @@ class SupplierSchema(Schema):
     email = fields.Email(required=True)
     phone = fields.Str(required=True)
 
-CORS_ORIGINS = ["http://localhost:5000"]
+CORS_ORIGINS = ["http://localhost:5000", "http://127.0.0.1:5000"]
 app = Flask(__name__, static_folder='../frontend', static_url_path='/frontend')
 app.config["MONGO_URI"] = config.MONGO_URI
 mongo = PyMongo(app)
-CORS(app, origins=CORS_ORIGINS)
-CORS(app)
+
+# Configuração do CORS - habilita para todas as origens
+CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 
 # Configurar Swagger UI
 swaggerui_blueprint = get_swaggerui_blueprint(
@@ -45,6 +59,19 @@ swaggerui_blueprint = get_swaggerui_blueprint(
     }
 )
 app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
+
+# Middleware para log de requisições
+@app.before_request
+def log_request_info():
+    logger.debug('Request Headers: %s', request.headers)
+    logger.debug('Request Body: %s', request.get_data())
+
+# Middleware para log de respostas
+@app.after_request
+def log_response_info(response):
+    logger.debug('Response Status: %s', response.status)
+    # Não logamos o corpo da resposta para evitar dados sensíveis ou respostas muito grandes
+    return response
 
 # Rota para servir o arquivo swagger.json
 @app.route('/api/swagger.json')
@@ -72,22 +99,30 @@ user = User(mongo)
 def login():
     """Login de usuário"""
     try:
+        logger.info("Iniciando processo de login")
         data = request.get_json()
+        logger.debug(f"Dados recebidos: {data}")
         username = data.get('username')
         password = data.get('password')
         
         if not username or not password:
+            logger.warning("Tentativa de login sem usuário ou senha")
             return {'success': False, 'message': 'Usuário e senha são obrigatórios'}, 400
-            
+        
+        logger.info(f"Tentando autenticar usuário: {username}")
         user_data = user.authenticate(username, password)
+        
         if not user_data:
+            logger.warning(f"Autenticação falhou para usuário: {username}")
             return {'success': False, 'message': 'Credenciais inválidas'}, 401
             
+        logger.info(f"Usuário autenticado com sucesso: {username}")
         access_token = create_access_token(
             identity=user_data['id'],
             additional_claims={'role': user_data.get('role', 'user')}
         )
         
+        logger.debug("Token JWT criado com sucesso")
         return {
             'success': True,
             'token': access_token,
@@ -100,7 +135,7 @@ def login():
         }
         
     except Exception as e:
-        logger.error(f"Erro no login: {str(e)}")
+        logger.error(f"Erro no login: {str(e)}", exc_info=True)
         return {'success': False, 'message': 'Erro interno no servidor'}, 500
 
 @app.route('/auth/register', methods=['POST'])
@@ -213,10 +248,14 @@ def delete_user(id):
 def get_all_suppliers():
     """Lista todos os fornecedores."""
     try:
+        logger.info("Recebendo solicitação para listar fornecedores")
         data = supplier.get_all()
+        logger.debug(f"Fornecedores recuperados: {len(data)} itens")
+        logger.debug(f"Estrutura: {data.keys() if data else 'Nenhum dado'}")
+        # Garantir que a resposta está no formato esperado pelo frontend
         return {'success': True, 'data': data}
     except Exception as e:
-        logger.error(f"Erro ao listar fornecedores: {str(e)}")
+        logger.error(f"Erro ao listar fornecedores: {str(e)}", exc_info=True)
         return {'success': False, 'message': 'Erro ao listar fornecedores'}, 500
 
 @app.route('/suppliers/<id>', methods=['GET'])
@@ -248,8 +287,11 @@ def create_supplier():
         result = supplier.create(data)
         logger.info(f"Fornecedor criado com sucesso: {result}")
         return {'success': True, 'data': result}, 201
+    except ValueError as e:
+        logger.warning(f"Erro de validação ao criar fornecedor: {str(e)}")
+        return {'success': False, 'message': str(e)}, 400
     except Exception as e:
-        logger.error(f"Erro ao criar fornecedor: {str(e)}")
+        logger.error(f"Erro ao criar fornecedor: {str(e)}", exc_info=True)
         return {'success': False, 'message': f'Erro ao criar fornecedor: {str(e)}'}, 500
 
 @app.route('/suppliers/<id>', methods=['PUT'])
@@ -267,11 +309,15 @@ def update_supplier(id):
             return {'success': False, 'message': f"Erro de validação: {err.messages}"}, 400
         result = supplier.update(id, data)
         if result is None:
+            logger.warning(f"Fornecedor não encontrado para atualização: {id}")
             return {'success': False, 'message': 'Fornecedor não encontrado'}, 404
         logger.info(f"Fornecedor {id} atualizado com sucesso")
         return {'success': True, 'data': result}
+    except ValueError as e:
+        logger.warning(f"Erro de validação ao atualizar fornecedor: {str(e)}")
+        return {'success': False, 'message': str(e)}, 400
     except Exception as e:
-        logger.error(f"Erro ao atualizar fornecedor {id}: {str(e)}")
+        logger.error(f"Erro ao atualizar fornecedor {id}: {str(e)}", exc_info=True)
         return {'success': False, 'message': f'Erro ao atualizar fornecedor: {str(e)}'}, 500
 
 @app.route('/suppliers/<id>', methods=['DELETE'])

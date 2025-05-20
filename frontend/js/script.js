@@ -232,6 +232,7 @@ function formatPhone(phone) {
 }
 
 function openModal(supplier = null) {
+    console.log('Abrindo modal com fornecedor:', supplier);
     currentSupplier = supplier;
     const form = document.getElementById('supplierForm');
     form.reset();
@@ -239,11 +240,19 @@ function openModal(supplier = null) {
     
     if (supplier) {
         document.getElementById('modalTitle').textContent = 'Editar Fornecedor';
-        document.getElementById('supplierId').value = supplier.id;
-        document.getElementById('name').value = supplier.name;
-        document.getElementById('cnpj').value = formatCNPJ(supplier.cnpj);
-        document.getElementById('email').value = supplier.email;
-        document.getElementById('phone').value = formatPhone(supplier.phone);
+        
+        // Garantir que o ID esteja presente
+        const supplierId = supplier.id || '';
+        document.getElementById('supplierId').value = supplierId;
+        
+        // Debug dos dados recebidos
+        console.log(`ID: ${supplierId}, Nome: ${supplier.name}, CNPJ: ${supplier.cnpj}`);
+        
+        // Preencher campos
+        document.getElementById('name').value = supplier.name || '';
+        document.getElementById('cnpj').value = supplier.cnpj ? formatCNPJ(supplier.cnpj) : '';
+        document.getElementById('email').value = supplier.email || '';
+        document.getElementById('phone').value = supplier.phone ? formatPhone(supplier.phone) : '';
     } else {
         document.getElementById('modalTitle').textContent = 'Novo Fornecedor';
         document.getElementById('supplierId').value = '';
@@ -255,14 +264,22 @@ function openModal(supplier = null) {
 async function loadSuppliers() {
     try {
         showLoading();
+        console.log('Iniciando carregamento de fornecedores...');
+        
+        const token = localStorage.getItem('token');
+        console.log('Token disponível:', !!token);
+        
         const response = await fetch(`${API_URL}/suppliers`, {
             headers: {
-                'Authorization': `Bearer ${localStorage.getItem('token')}`
+                'Authorization': `Bearer ${token}`
             }
         });
 
+        console.log('Status da resposta:', response.status);
+        
         if (response.status === 401) {
             // Token expired or invalid
+            console.log('Token inválido ou expirado');
             localStorage.removeItem('token');
             localStorage.removeItem('user');
             window.location.href = 'login.html';
@@ -274,14 +291,32 @@ async function loadSuppliers() {
         }
 
         const result = await response.json();
+        console.log('Estrutura da resposta:', Object.keys(result));
         
         if (result.success) {
             suppliers = result.data || {};
             console.log('Dados recebidos da API:', suppliers);
+            console.log('Tipo de dado:', typeof suppliers);
+            
+            // Verificar se suppliers é um objeto e tem a estrutura esperada
+            if (typeof suppliers !== 'object' || suppliers === null) {
+                console.error('Dados de fornecedores inválidos:', suppliers);
+                renderSuppliers([]);
+                return;
+            }
             
             // Converter para array se necessário
-            const suppliersList = Object.values(suppliers);
+            let suppliersList;
+            if (Array.isArray(suppliers)) {
+                suppliersList = [...suppliers];
+                console.log('Fornecedores já é um array');
+            } else {
+                suppliersList = Object.values(suppliers);
+                console.log('Fornecedores convertido para array');
+            }
+            
             console.log('Total de fornecedores:', suppliersList.length);
+            console.log('Exemplo de fornecedor:', suppliersList.length > 0 ? suppliersList[0] : 'Nenhum fornecedor');
             
             // Atualizar contagem e renderizar
             updateTotalCount(suppliersList.length);
@@ -290,8 +325,8 @@ async function loadSuppliers() {
             throw new Error(result.message || 'Erro ao carregar dados');
         }
     } catch (error) {
-        console.error('Erro ao carregar:', error);
-        showErrorMessage('Erro ao carregar fornecedores');
+        console.error('Erro ao carregar fornecedores:', error);
+        showErrorMessage('Erro ao carregar fornecedores: ' + error.message);
         updateTotalCount(0);
         renderSuppliers([]);
     } finally {
@@ -301,15 +336,25 @@ async function loadSuppliers() {
 
 function renderSuppliers(suppliersList = []) {
     const tbody = document.getElementById('suppliersList');
+    if (!tbody) {
+        console.error('Elemento suppliersList não encontrado');
+        return;
+    }
+    
     tbody.innerHTML = '';
     
     // Garantir que suppliersList seja um array válido
     const safeList = Array.isArray(suppliersList) ? suppliersList : [];
     
-    // Atualizar contagem total primeiro
-    updateTotalCount(safeList.length);
+    // Remover itens nulos ou undefined
+    const filteredList = safeList.filter(item => item != null);
     
-    if (safeList.length === 0) {
+    console.log('Renderizando lista de fornecedores:', filteredList.length);
+    
+    // Atualizar contagem total primeiro
+    updateTotalCount(filteredList.length);
+    
+    if (filteredList.length === 0) {
         tbody.innerHTML = `
             <tr>
                 <td colspan="5" class="text-center py-4">
@@ -323,31 +368,41 @@ function renderSuppliers(suppliersList = []) {
         return;
     }
     
-    suppliersList.forEach(supplier => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td class="ps-3">
-                <div class="fw-medium">${supplier.name}</div>
-            </td>
-            <td>${formatCNPJ(supplier.cnpj)}</td>
-            <td>
-                <a href="mailto:${supplier.email}" class="text-decoration-none">
-                    ${supplier.email}
-                </a>
-            </td>
-            <td class="text-decoration-none">
-                ${formatPhone(supplier.phone)}
-            </td>
-            <td class="text-end pe-3">
-                <button class="btn btn-sm btn-outline-primary me-1" onclick="openModal(${JSON.stringify(supplier).replace(/"/g, '&quot;')})">
-                    <i class="bi bi-pencil"></i>
-                </button>
-                <button class="btn btn-sm btn-outline-danger" onclick="deleteSupplier('${supplier.id}')">
-                    <i class="bi bi-trash"></i>
-                </button>
-            </td>
-        `;
-        tbody.appendChild(row);
+    filteredList.forEach(supplier => {
+        try {
+            const row = document.createElement('tr');
+            
+            // Verificar se todos os campos necessários existem
+            const name = supplier.name || 'Nome não disponível';
+            const cnpj = supplier.cnpj || '';
+            const email = supplier.email || '';
+            const phone = supplier.phone || '';
+            const id = supplier.id || '';
+            
+            row.innerHTML = `
+                <td class="ps-3">
+                    <div class="fw-medium">${name}</div>
+                </td>
+                <td>${cnpj ? formatCNPJ(cnpj) : 'N/A'}</td>
+                <td>
+                    ${email ? `<a href="mailto:${email}" class="text-decoration-none">${email}</a>` : 'N/A'}
+                </td>
+                <td class="text-decoration-none">
+                    ${phone ? formatPhone(phone) : 'N/A'}
+                </td>
+                <td class="text-end pe-3">
+                    <button class="btn btn-sm btn-outline-primary me-1" onclick="openModal(${JSON.stringify(supplier).replace(/"/g, '&quot;')})">
+                        <i class="bi bi-pencil"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger" onclick="deleteSupplier('${id}')">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </td>
+            `;
+            tbody.appendChild(row);
+        } catch (error) {
+            console.error('Erro ao renderizar fornecedor:', error, supplier);
+        }
     });
 }
 
@@ -447,6 +502,14 @@ async function saveSupplier() {
 }
 
 async function deleteSupplier(id) {
+    console.log('Tentando excluir fornecedor com ID:', id);
+    
+    if (!id) {
+        console.error('ID do fornecedor não fornecido');
+        showErrorMessage('ID do fornecedor não fornecido');
+        return;
+    }
+    
     try {
         const result = await Swal.fire({
             title: 'Confirmar exclusão',
@@ -463,6 +526,7 @@ async function deleteSupplier(id) {
         if (result.isConfirmed) {
             showLoading();
             try {
+                console.log(`Enviando requisição DELETE para ${API_URL}/suppliers/${id}`);
                 const response = await fetch(`${API_URL}/suppliers/${id}`, {
                     method: 'DELETE',
                     headers: {
@@ -471,6 +535,8 @@ async function deleteSupplier(id) {
                     }
                 });
 
+                console.log('Status da resposta:', response.status);
+                
                 if (response.status === 401) {
                     // Token expired or invalid
                     localStorage.removeItem('token');
