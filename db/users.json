@@ -6,5 +6,45 @@
         "password": "$2b$12$guqZ2q4fpTsOVapTOEm4m.lTqHxo27O09pZ7OhjYEerYfmMP7Tx5u",
         "role": "admin",
         "active": true
+    },
+    "usr_58922852-84f7-4e26-90ee-718be96a78aa": {
+        "id": "usr_58922852-84f7-4e26-90ee-718be96a78aa",
+        "email": "usuario55312@teste.com",
+        "password": "$2b$12$Vh2FN4t1h6gxSsvYbArDGustf2UKJN1INw4DRHtmwORE1smFrYYV2",
+        "username": "usuario55312",
+        "role": "user",
+        "active": true
+    },
+    "usr_8dab7fb1-2c9c-459f-9c64-0322c03b99c2": {
+        "id": "usr_8dab7fb1-2c9c-459f-9c64-0322c03b99c2",
+        "email": "usuario58711@teste.com",
+        "password": "$2b$12$.LBtlTnO2WXTXYoIvKKFuuw4d6o/mQk1o6vocAuJn344PDYBKKvli",
+        "username": "usuario58711",
+        "role": "user",
+        "active": true
+    },
+    "usr_ebc2b51a-af80-4bee-b2ad-2cd00f722e02": {
+        "id": "usr_ebc2b51a-af80-4bee-b2ad-2cd00f722e02",
+        "email": "usuario63799@teste.com",
+        "password": "$2b$12$lAbyrZ2g.8LyNVWgcRwZHuNn15qBgPJMvE5WGzEr/g/V9OZukSIvK",
+        "username": "usuario63799",
+        "role": "user",
+        "active": true
+    },
+    "usr_ec3c90fb-6145-4d0b-8d34-cf18e3b902b3": {
+        "id": "usr_ec3c90fb-6145-4d0b-8d34-cf18e3b902b3",
+        "email": "usuario42252@teste.com",
+        "password": "$2b$12$t21/gbL7.pDsQijJiOqtUum9vrebQIHVvcZKZpKgPSQX1qJfIizui",
+        "username": "usuario42252",
+        "role": "user",
+        "active": true
+    },
+    "usr_a8746259-51aa-4f0e-917f-c99846e7bf25": {
+        "id": "usr_a8746259-51aa-4f0e-917f-c99846e7bf25",
+        "email": "usuario55259@teste.com",
+        "password": "$2b$12$iB0sziJ7er0ZCoI4L0F45OKAIHnF2aCS1UgaYTHTHfHiu0Bq/KrVe",
+        "username": "usuario55259",
+        "role": "user",
+        "active": true
     }
 }

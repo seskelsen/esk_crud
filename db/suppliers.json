@@ -54,5 +54,82 @@
         "phone": "11999999999",
         "name": "Fornecedor Teste",
         "cnpj": "98765432101234"
+    },
+    "sup_07ba5eb4-5a78-4d62-8dde-d4804607bed6": {
+        "id": "sup_07ba5eb4-5a78-4d62-8dde-d4804607bed6",
+        "cnpj": "12345678000199",
+        "email": "fornecedor@teste.com",
+        "name": "Fornecedor Teste",
+        "phone": "11999999999"
+    },
+    "sup_5e641d85-aa3f-465f-bff4-3e3c597a7fb9": {
+        "id": "sup_5e641d85-aa3f-465f-bff4-3e3c597a7fb9",
+        "cnpj": "47375038124596",
+        "email": "fornecedor4596@teste.com",
+        "name": "Fornecedor Teste",
+        "phone": "11999999999"
+    },
+    "sup_82213132-4c2a-4eeb-a1ca-070eda146f12": {
+        "id": "sup_82213132-4c2a-4eeb-a1ca-070eda146f12",
+        "cnpj": "92434627012309",
+        "email": "atualizado2309@teste.com",
+        "name": "Fornecedor Atualizado",
+        "phone": "11988888888"
+    },
+    "sup_04b175e6-cc13-4ab4-b901-fbf4fdb392e1": {
+        "id": "sup_04b175e6-cc13-4ab4-b901-fbf4fdb392e1",
+        "cnpj": "71682914602649",
+        "email": "fornecedor2649@teste.com",
+        "name": "Fornecedor Teste",
+        "phone": "11999999999"
+    },
+    "sup_04e53b25-b542-4c5e-941a-e3bbdb089ab6": {
+        "id": "sup_04e53b25-b542-4c5e-941a-e3bbdb089ab6",
+        "cnpj": "61391339545170",
+        "email": "atualizado5170@teste.com",
+        "name": "Fornecedor Atualizado",
+        "phone": "11988888888"
+    },
+    "sup_b667e4ab-4f96-4e8d-99f9-f00fdb77d954": {
+        "id": "sup_b667e4ab-4f96-4e8d-99f9-f00fdb77d954",
+        "cnpj": "39746650352962",
+        "email": "fornecedor2962@teste.com",
+        "name": "Fornecedor Teste",
+        "phone": "11999999999"
+    },
+    "sup_5e40d9f7-da3f-44f9-8827-6c2acfa5aed9": {
+        "id": "sup_5e40d9f7-da3f-44f9-8827-6c2acfa5aed9",
+        "cnpj": "79908470121410",
+        "email": "atualizado1410@teste.com",
+        "name": "Fornecedor Atualizado",
+        "phone": "11988888888"
+    },
+    "sup_2715d083-a043-4488-bc4a-dedf83dbdd08": {
+        "id": "sup_2715d083-a043-4488-bc4a-dedf83dbdd08",
+        "cnpj": "34128444287511",
+        "email": "fornecedor7511@teste.com",
+        "name": "Fornecedor Teste",
+        "phone": "11999999999"
+    },
+    "sup_6e4311c4-ed9a-48ba-a208-83de65049f57": {
+        "id": "sup_6e4311c4-ed9a-48ba-a208-83de65049f57",
+        "cnpj": "10507346450976",
+        "email": "atualizado0976@teste.com",
+        "name": "Fornecedor Atualizado",
+        "phone": "11988888888"
+    },
+    "sup_38f646db-664e-48c3-bcd1-35fa1bf2dae9": {
+        "id": "sup_38f646db-664e-48c3-bcd1-35fa1bf2dae9",
+        "cnpj": "62477489132039",
+        "email": "fornecedor2039@teste.com",
+        "name": "Fornecedor Teste",
+        "phone": "11999999999"
+    },
+    "sup_c42fea60-70d4-4698-8e25-8412da11b627": {
+        "id": "sup_c42fea60-70d4-4698-8e25-8412da11b627",
+        "cnpj": "44373381724835",
+        "email": "atualizado4835@teste.com",
+        "name": "Fornecedor Atualizado",
+        "phone": "11988888888"
     }
 }

@@ -2,8 +2,10 @@ from flask import Flask, request, jsonify, send_from_directory, redirect
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 from marshmallow import Schema, fields, validate, ValidationError
-from api.supplier import Supplier
-from api.user import User
+from api.supplier_mongo import Supplier
+from api.user_mongo import User
+from flask_pymongo import PyMongo
+from api import config
 from flask_wtf.csrf import CSRFProtect
 from flask_swagger_ui import get_swaggerui_blueprint
 import secrets
@@ -27,7 +29,11 @@ class SupplierSchema(Schema):
     email = fields.Email(required=True)
     phone = fields.Str(required=True)
 
+CORS_ORIGINS = ["http://localhost:5000"]
 app = Flask(__name__, static_folder='../frontend', static_url_path='/frontend')
+app.config["MONGO_URI"] = config.MONGO_URI
+mongo = PyMongo(app)
+CORS(app, origins=CORS_ORIGINS)
 CORS(app)
 
 # Configurar Swagger UI
@@ -57,9 +63,9 @@ app.config['WTF_CSRF_ENABLED'] = False  # Desabilitado temporariamente para test
 jwt = JWTManager(app)
 csrf = CSRFProtect(app)
 
-# Instanciar modelos
-supplier = Supplier()
-user = User()
+# Instanciar modelos (agora ambos usam MongoDB)
+supplier = Supplier(mongo)
+user = User(mongo)
 
 # Rotas de autenticação
 @app.route('/auth/login', methods=['POST'])
@@ -207,9 +213,7 @@ def delete_user(id):
 def get_all_suppliers():
     """Lista todos os fornecedores."""
     try:
-        # Usar a instância de teste se estiver em modo de teste
-        supplier_instance = app.config.get('supplier', supplier)
-        data = supplier_instance.get_all()
+        data = supplier.get_all()
         return {'success': True, 'data': data}
     except Exception as e:
         logger.error(f"Erro ao listar fornecedores: {str(e)}")
@@ -220,8 +224,7 @@ def get_all_suppliers():
 def get_one_supplier(id):
     """Obtém um fornecedor pelo ID."""
     try:
-        supplier_instance = app.config.get('supplier', supplier)
-        data = supplier_instance.get(id)
+        data = supplier.get(id)
         if data is None:
             return {'success': False, 'message': 'Fornecedor não encontrado'}, 404
         return {'success': True, 'data': data}
@@ -234,24 +237,17 @@ def get_one_supplier(id):
 def create_supplier():
     """Cria um novo fornecedor."""
     try:
-        # Validar dados usando o schema
         schema = SupplierSchema()
         try:
             data = request.get_json()
-            # Validar dados
             schema.load(data)
         except ValidationError as err:
             logger.warning(f"Erro de validação: {err.messages}")
             return {'success': False, 'message': f"Erro de validação: {err.messages}"}, 400
-            
         logger.debug(f"Tentando criar fornecedor com dados: {data}")
-        supplier_instance = app.config.get('supplier', supplier)
-            
-        # Criar fornecedor
-        result = supplier_instance.create(data)
+        result = supplier.create(data)
         logger.info(f"Fornecedor criado com sucesso: {result}")
         return {'success': True, 'data': result}, 201
-        
     except Exception as e:
         logger.error(f"Erro ao criar fornecedor: {str(e)}")
         return {'success': False, 'message': f'Erro ao criar fornecedor: {str(e)}'}, 500
@@ -263,24 +259,17 @@ def update_supplier(id):
     try:
         data = request.get_json()
         logger.debug(f"Tentando atualizar fornecedor {id} com dados: {data}")
-        supplier_instance = app.config.get('supplier', supplier)
-        
-        # Validar dados usando o schema
         schema = SupplierSchema()
         try:
-            # Validar dados
             schema.load(data)
         except ValidationError as err:
             logger.warning(f"Erro de validação: {err.messages}")
             return {'success': False, 'message': f"Erro de validação: {err.messages}"}, 400
-            
-        result = supplier_instance.update(id, data)
+        result = supplier.update(id, data)
         if result is None:
             return {'success': False, 'message': 'Fornecedor não encontrado'}, 404
-            
         logger.info(f"Fornecedor {id} atualizado com sucesso")
         return {'success': True, 'data': result}
-        
     except Exception as e:
         logger.error(f"Erro ao atualizar fornecedor {id}: {str(e)}")
         return {'success': False, 'message': f'Erro ao atualizar fornecedor: {str(e)}'}, 500
@@ -291,16 +280,13 @@ def delete_supplier(id):
     """Remove um fornecedor pelo ID."""
     try:
         logger.debug(f"Tentando excluir fornecedor {id}")
-        supplier_instance = app.config.get('supplier', supplier)
-        success = supplier_instance.delete(id)
-        
+        success = supplier.delete(id)
         if success:
             logger.info(f"Fornecedor {id} excluído com sucesso")
             return {'success': True, 'message': 'Fornecedor excluído com sucesso'}, 204
         else:
             logger.warning(f"Fornecedor {id} não encontrado para exclusão")
             return {'success': False, 'message': 'Fornecedor não encontrado'}, 404
-            
     except Exception as e:
         logger.error(f"Erro ao excluir fornecedor {id}: {str(e)}")
         return {'success': False, 'message': f'Erro ao excluir fornecedor: {str(e)}'}, 500

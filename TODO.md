@@ -42,13 +42,12 @@
 ## 🧪 Qualidade de Código (Média Prioridade)
 
 1. [ ] Melhorar cobertura de testes
-   - NOTA: Atualmente não existem testes automatizados. A implementação completa será feita na Fase 2.
-   - Testes de integração
-   - Testes E2E com Selenium ou Cypress
+   - Testes unitários e de integração já implementados para autenticação, permissões e CRUD de fornecedores (backend)
+   - Expandir para testes de integração completos
+   - Testes E2E com Selenium ou Cypress (frontend)
    - Testes de performance
    - Mocks e fixtures padronizados
-   - Testes unitários para rotas da API
-   - Testes unitários para lógica de negócios
+   - Testes unitários para lógica de negócios e rotas avançadas
    - Testes automatizados de frontend com Cypress
 
 2. [ ] Implementar análise estática
@@ -225,6 +224,7 @@
 - [x] Configurar Swagger UI para documentação da API.
 - [x] Redirecionar a raiz do servidor para o frontend.
 - [x] Atualizar `requirements.txt` com dependências recentes.
+- [x] Implementar testes automatizados para backend (autenticação, permissões, CRUD de fornecedores, casos de erro).
 
 ## Próximas Tarefas
 - [ ] Melhorar a interface do usuário no frontend.
