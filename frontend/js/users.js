@@ -72,6 +72,18 @@ function initializeFormValidation() {
     }, false);
 }
 
+// Include the handleAuthError function from script.js
+function handleAuthError(response) {
+    if (response.status === 401 || response.status === 403 || response.status === 422) {
+        console.log('Erro de autenticação:', response.status);
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = 'login.html';
+        return true;
+    }
+    return false;
+}
+
 async function loadUsers() {
     try {
         showLoading();
@@ -79,6 +91,12 @@ async function loadUsers() {
         const response = await fetch(`${API_URL}/users`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
+        
+        // Check for authentication errors
+        if (handleAuthError(response)) {
+            return;
+        }
+        
         if (!response.ok) throw new Error(`Status ${response.status}`);
         const result = await response.json();
         if (result.success) {
@@ -160,6 +178,11 @@ async function saveUser() {
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                 body: JSON.stringify(data)
             });
+            
+            // Check for authentication errors
+            if (handleAuthError(response)) {
+                return;
+            }
         } else {
             // Create new user via register endpoint
             const data = { username, email, password };
@@ -168,15 +191,26 @@ async function saveUser() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
             });
+            
+            // Check for authentication errors
+            if (handleAuthError(response)) {
+                return;
+            }
+            
             if (response.ok) {
                 const result = await response.json();
                 // After creating, update role and active
                 const newId = result.user.id;
-                await fetch(`${API_URL}/users/${newId}`, {
+                const updateResponse = await fetch(`${API_URL}/users/${newId}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                     body: JSON.stringify({ role, active })
                 });
+                
+                // Check for authentication errors in the update call
+                if (handleAuthError(updateResponse)) {
+                    return;
+                }
             }
         }
         const result = await response.json();
@@ -202,6 +236,12 @@ async function deleteUser(id) {
             method: 'DELETE',
             headers: { 'Authorization': `Bearer ${token}` }
         });
+        
+        // Check for authentication errors
+        if (handleAuthError(response)) {
+            return;
+        }
+        
         const result = await response.json();
         if (!response.ok) throw new Error(result.message);
         Swal.fire({ icon: 'success', title: 'Sucesso', text: 'Usuário excluído', timer: 1500, showConfirmButton: false });

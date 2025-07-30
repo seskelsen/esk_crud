@@ -2,10 +2,10 @@ from flask import Flask, request, jsonify, send_from_directory, redirect
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 from marshmallow import Schema, fields, validate, ValidationError
-from api.supplier_mongo import Supplier
-from api.user_mongo import User
+from supplier_mongo import Supplier
+from user_mongo import User
 from flask_pymongo import PyMongo
-from api import config
+import config
 from flask_wtf.csrf import CSRFProtect
 from flask_swagger_ui import get_swaggerui_blueprint
 import secrets
@@ -14,7 +14,7 @@ from datetime import timedelta
 from functools import wraps
 import os
 import yaml
-from api.validators import CNPJValidator
+from validators import CNPJValidator
 from dotenv import load_dotenv
 
 # Carregar variáveis de ambiente do arquivo .env

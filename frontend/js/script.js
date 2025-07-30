@@ -64,6 +64,19 @@ function isLoggedIn() {
     return !!token;
 }
 
+// Função global para lidar com erros de autenticação
+function handleAuthError(response) {
+    // Códigos de erro que indicam problemas de autenticação/autorização
+    if (response.status === 401 || response.status === 403 || response.status === 422) {
+        console.log('Erro de autenticação detectado, redirecionando para login...');
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = 'login.html';
+        return true;
+    }
+    return false;
+}
+
 function showLoading() {
     const overlay = document.getElementById('loading-overlay');
     if (overlay) {
@@ -285,12 +298,8 @@ async function loadSuppliers() {
 
         console.log('Status da resposta:', response.status);
         
-        if (response.status === 401) {
-            // Token expired or invalid
-            console.log('Token inválido ou expirado');
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
-            window.location.href = 'login.html';
+        // Verificar erros de autenticação e redirecionar se necessário
+        if (handleAuthError(response)) {
             return;
         }
 
