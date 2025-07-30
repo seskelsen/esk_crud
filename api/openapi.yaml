@@ -2,7 +2,10 @@ openapi: 3.0.3
 info:
   title: API de Fornecedores
   version: v1
-  description: API para gerenciamento de fornecedores com autenticação JWT
+  description: |-
+    API para gerenciamento de fornecedores com autenticação JWT.
+    A documentação interativa (Swagger UI) está disponível em /api/docs.
+    A especificação OpenAPI em formato JSON está disponível em /api/swagger.json.
 
 components:
   securitySchemes:
@@ -228,8 +231,8 @@ paths:
                     type: boolean
                     example: true
                   data:
-                    type: object
-                    additionalProperties:
+                    type: array
+                    items:
                       $ref: '#/components/schemas/User'
         '403':
           description: Acesso negado (requer admin)
@@ -348,7 +351,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
 
-  /:
+  /suppliers:
     get:
       tags:
         - Fornecedores
@@ -367,8 +370,8 @@ paths:
                     type: boolean
                     example: true
                   data:
-                    type: object
-                    additionalProperties:
+                    type: array
+                    items:
                       $ref: '#/components/schemas/Supplier'
         '401':
           description: Não autorizado
@@ -415,7 +418,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
 
-  /{id}:
+  /suppliers/{id}:
     parameters:
       - name: id
         in: path
@@ -505,8 +508,19 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '204':
+        '200':
           description: Fornecedor removido com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Fornecedor removido com sucesso
         '401':
           description: Não autorizado
           content:
@@ -519,13 +533,3 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-
-  /openapi.yaml:
-    get:
-      tags:
-        - Documentação
-      summary: Obtém a especificação OpenAPI
-      security: []
-      responses:
-        '200':
-          description: Especificação OpenAPI

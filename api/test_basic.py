@@ -201,5 +201,7 @@ def test_delete_supplier_authenticated(client):
         f'/suppliers/{supplier_id}',
         headers={"Authorization": f"Bearer {token}"}
     )
-    # Espera 204 No Content para exclusão bem-sucedida
-    assert response.status_code == 204
+    # Espera 200 OK para exclusão bem-sucedida
+    assert response.status_code == 200
+    data = response.get_json()
+    assert data["success"] is True

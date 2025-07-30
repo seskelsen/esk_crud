@@ -1,8 +1,9 @@
-# Sistema de Gestão de Fornecedores
+# Sistema de Gestão de Fornecedores e Usuários
 
-## Visão Geral
-Este é um sistema de gestão de fornecedores que permite:
-- Gerenciar fornecedores (CRUD completo)
+-## Visão Geral
+- Este é um sistema de gestão de fornecedores e usuários que permite:
+- - Gerenciar fornecedores (CRUD completo)
+- - Gerenciar usuários (CRUD completo, apenas administradores)
 - Autenticação e autorização com JWT
 - Controle de acesso baseado em funções (RBAC)
 - Documentação da API com Swagger
@@ -11,8 +12,9 @@ Este é um sistema de gestão de fornecedores que permite:
 - **Autenticação JWT**: Login e registro de usuários com tokens JWT.
 - **Controle de Acesso**: Apenas administradores podem gerenciar usuários.
 - **Gestão de Fornecedores**: CRUD completo para fornecedores.
+- **Gestão de Usuários**: CRUD completo para usuários, acessível apenas a administradores.
 - **Swagger UI**: Documentação interativa da API.
-- **Frontend**: Interface web para gerenciar fornecedores.
+- **Frontend**: Interface web para gerenciar fornecedores e usuários.
 
 ## Tecnologias Utilizadas
 

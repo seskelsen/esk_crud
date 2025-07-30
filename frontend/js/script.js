@@ -26,6 +26,14 @@ function setupUI() {
     // Setup user info in navbar
     const user = JSON.parse(localStorage.getItem('user'));
     const navbarNav = document.getElementById('navbarNav');
+    // Adicionar link de Usuários para admins
+    if (user.role === 'admin') {
+        const adminLink = document.createElement('li');
+        adminLink.className = 'nav-item';
+        adminLink.innerHTML = `<a class="nav-link" href="users.html"><i class="bi bi-people me-1"></i> Usuários</a>`;
+        const mainNav = navbarNav.querySelector('.navbar-nav');
+        mainNav && mainNav.appendChild(adminLink);
+    }
     
     // Add user menu to navbar
     const userMenu = document.createElement('ul');
@@ -418,6 +426,11 @@ function updateTotalCount(count = 0) {
                     `${totalCount} fornecedores`;
     
     totalElement.textContent = mensagem;
+}
+
+function validateCNPJ(cnpj) {
+    const regex = /^[a-zA-Z0-9]{14,20}$/; // Aceitar alfanumérico
+    return regex.test(cnpj);
 }
 
 async function saveSupplier() {

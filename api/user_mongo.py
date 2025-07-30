@@ -1,6 +1,7 @@
 import logging
 from bson import ObjectId
 import bcrypt
+from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
@@ -17,6 +18,10 @@ class User:
             raise ValueError('Email já cadastrado')
         # Hash da senha
         data['password'] = bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+        # Adiciona timestamps de criação e atualização
+        timestamp = datetime.utcnow()
+        data['created_at'] = timestamp
+        data['updated_at'] = timestamp
         result = self.collection.insert_one(data)
         user = self.get(str(result.inserted_id))
         logger.info(f"Usuário criado com ID: {user['id']}")
@@ -57,6 +62,8 @@ class User:
         return user
 
     def update(self, id, data):
+        # Atualiza timestamp de atualização
+        data['updated_at'] = datetime.utcnow()
         self.collection.update_one({'_id': ObjectId(id)}, {'$set': data})
         return self.get(id)
 

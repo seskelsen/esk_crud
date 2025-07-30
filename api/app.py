@@ -14,6 +14,7 @@ from datetime import timedelta
 from functools import wraps
 import os
 import yaml
+from api.validators import CNPJValidator
 
 # Configurar logging
 logging.basicConfig(
@@ -38,7 +39,7 @@ API_URL = '/api/swagger.json'
 
 class SupplierSchema(Schema):
     name = fields.Str(required=True)
-    cnpj = fields.Str(required=True, validate=validate.Length(equal=14))
+    cnpj = fields.Str(required=True, validate=CNPJValidator())
     email = fields.Email(required=True)
     phone = fields.Str(required=True)
 
@@ -286,6 +287,7 @@ def create_supplier():
         logger.debug(f"Tentando criar fornecedor com dados: {data}")
         result = supplier.create(data)
         logger.info(f"Fornecedor criado com sucesso: {result}")
+        logger.debug(f"Dados persistidos no MongoDB: {result}")
         return {'success': True, 'data': result}, 201
     except ValueError as e:
         logger.warning(f"Erro de validação ao criar fornecedor: {str(e)}")
@@ -329,7 +331,7 @@ def delete_supplier(id):
         success = supplier.delete(id)
         if success:
             logger.info(f"Fornecedor {id} excluído com sucesso")
-            return {'success': True, 'message': 'Fornecedor excluído com sucesso'}, 204
+            return {'success': True, 'message': 'Fornecedor excluído com sucesso'}, 200
         else:
             logger.warning(f"Fornecedor {id} não encontrado para exclusão")
             return {'success': False, 'message': 'Fornecedor não encontrado'}, 404

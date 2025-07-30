@@ -5,6 +5,16 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/),
 e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.4.0] - 2025-07-30
+
+### Adicionado
+* Página e lógica de frontend para gestão de usuários (users.html, users.js).
+* Rotas de CRUD de usuários no backend (api/app.py e user_mongo.py).
+* Link de navegação para gestão de usuários no menu principal, visível apenas para administradores.
+
+### Atualizado
+* README com instruções sobre gestão de usuários.
+
 ## [1.3.0] - 2025-03-15
 
 ### Adicionado

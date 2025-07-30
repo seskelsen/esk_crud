@@ -221,14 +221,19 @@
 - [x] Implementar autenticação JWT.
 - [x] Adicionar controle de acesso baseado em funções (RBAC).
 - [x] Criar página de login no frontend.
+- [x] Criar página de registro de usuários no frontend.
 - [x] Configurar Swagger UI para documentação da API.
 - [x] Redirecionar a raiz do servidor para o frontend.
-- [x] Atualizar `requirements.txt` com dependências recentes.
-- [x] Implementar testes automatizados para backend (autenticação, permissões, CRUD de fornecedores, casos de erro).
+- [x] Atualizar validação de CNPJ para novo padrão alfanumérico.
+- [x] Adicionar classe de validação CNPJ (`validators.py`).
+- [x] Armazenar timestamps `created_at` e `updated_at` em usuários e fornecedores.
+- [x] Atualizar endpoint DELETE `/suppliers/{id}` para retornar JSON com status 200.
+- [x] Adicionar testes automatizados para CRUD de fornecedores com CNPJ alfanumérico.
 
 ## Próximas Tarefas
-- [ ] Melhorar a interface do usuário no frontend.
-- [ ] Adicionar testes automatizados para novas funcionalidades.
-- [ ] Implementar paginação na listagem de fornecedores.
-- [ ] Melhorar a validação de dados no backend.
-- [ ] Configurar deploy automatizado com CI/CD.
+- [ ] Melhorar a interface do usuário no frontend (React/Vue, acessibilidade).
+- [ ] Criar interface de gestão de usuários (CRUD) no frontend.
+- [ ] Adicionar gestão de produtos e estoque (backend e frontend).
+- [ ] Implementar paginação e filtros na listagem de fornecedores e usuários.
+- [ ] Configurar Docker para desenvolvimento e produção.
+- [ ] Implementar pipeline CI/CD com testes automatizados e lint.
