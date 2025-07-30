@@ -5,6 +5,19 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/),
 e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.4.1] - 2025-07-30
+
+### Segurança
+* Movidas chaves sensíveis (JWT_SECRET_KEY, WTF_CSRF_SECRET_KEY) para variáveis de ambiente
+* Adicionado suporte para arquivo .env com python-dotenv
+* Removido logging de dados sensíveis
+* Atualizado .gitignore para incluir arquivos de ambiente
+* Documentação de segurança adicionada no README
+
+### Adicionado
+* Arquivo .env.example com variáveis necessárias
+* Seção de segurança no README com boas práticas
+
 ## [1.4.0] - 2025-07-30
 
 ### Adicionado

@@ -15,6 +15,10 @@ from functools import wraps
 import os
 import yaml
 from api.validators import CNPJValidator
+from dotenv import load_dotenv
+
+# Carregar variáveis de ambiente do arquivo .env
+load_dotenv()
 
 # Configurar logging
 logging.basicConfig(
@@ -82,9 +86,9 @@ def serve_swagger_spec():
     return jsonify(spec)
 
 # Configuração de segurança
-app.config['JWT_SECRET_KEY'] = secrets.token_hex(32)
+app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY', secrets.token_hex(32))
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=1)
-app.config['WTF_CSRF_SECRET_KEY'] = secrets.token_hex(32)
+app.config['WTF_CSRF_SECRET_KEY'] = os.getenv('WTF_CSRF_SECRET_KEY', secrets.token_hex(32))
 app.config['WTF_CSRF_ENABLED'] = False  # Desabilitado temporariamente para testes
 
 # Inicializar extensões
@@ -102,7 +106,6 @@ def login():
     try:
         logger.info("Iniciando processo de login")
         data = request.get_json()
-        logger.debug(f"Dados recebidos: {data}")
         username = data.get('username')
         password = data.get('password')
         

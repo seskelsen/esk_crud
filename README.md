@@ -59,9 +59,22 @@
 
 
 
-4. Configure a URI do MongoDB em `api/config.py` (já configurado para Atlas por padrão):
-   ```python
-   MONGO_URI = "mongodb+srv://<usuario>:<senha>@<cluster>.mongodb.net/eskcrud?retryWrites=true&w=majority&appName=Cluster0"
+4. Configure as variáveis de ambiente:
+   - Copie o arquivo `.env.example` para `.env`:
+     ```bash
+     cp .env.example .env
+     ```
+   - Edite o arquivo `.env` e configure as variáveis necessárias:
+     ```env
+     MONGO_URI=sua_uri_do_mongodb_atlas
+     JWT_SECRET_KEY=sua_chave_secreta_jwt
+     WTF_CSRF_SECRET_KEY=sua_chave_secreta_csrf
+     ```
+
+5. Configure a URI do MongoDB em `.env` (obrigatório):
+5. Configure a URI do MongoDB em `.env` (obrigatório):
+   ```env
+   MONGO_URI="mongodb+srv://<usuario>:<senha>@<cluster>.mongodb.net/eskcrud?retryWrites=true&w=majority&appName=Cluster0"
    ```
 
    **Como obter a URI do MongoDB Atlas:**
@@ -73,18 +86,18 @@
    6. Substitua `<usuario>`, `<senha>` e `<cluster>` na string acima pelos dados do seu cluster.
 
    Exemplo de URI:
-   ```python
-   MONGO_URI = "mongodb+srv://meuusuario:minhasenha@cluster0.abcde.mongodb.net/eskcrud?retryWrites=true&w=majority&appName=Cluster0"
+   ```env
+   MONGO_URI="mongodb+srv://meuusuario:minhasenha@cluster0.abcde.mongodb.net/eskcrud?retryWrites=true&w=majority&appName=Cluster0"
    ```
 
-   > **Dica:** Para produção, use variáveis de ambiente para armazenar a URI e segredos.
+   > **Importante:** Nunca commite o arquivo `.env` com credenciais reais. Use variáveis de ambiente para produção.
 
-5. Inicie o servidor:
+6. Inicie o servidor:
    ```bash
    python server.py
    ```
 
-5. Acesse o sistema no navegador:
+7. Acesse o sistema no navegador:
    - Frontend: [http://localhost:5000](http://localhost:5000)
    - Swagger UI: [http://localhost:5000/api/docs](http://localhost:5000/api/docs)
 
@@ -147,6 +160,25 @@ O projeto conta com uma suíte robusta de testes automatizados para backend, inc
 ```bash
 pytest api/test_basic.py --disable-warnings -v
 ```
+
+## Segurança
+
+### Variáveis de Ambiente
+- **Nunca** commite arquivos `.env` com credenciais reais no Git
+- Use variáveis de ambiente em produção
+- Mantenha chaves secretas seguras e rotacione-as regularmente
+
+### Boas Práticas
+- Senhas são armazenadas com hash bcrypt
+- Tokens JWT têm expiração configurável
+- CORS está configurado para origens específicas
+- Logs não incluem dados sensíveis
+
+### Para Produção
+- Configure `FLASK_ENV=production`
+- Use HTTPS para todas as comunicações
+- Configure firewall e restrições de IP no MongoDB Atlas
+- Use secrets management (AWS Secrets Manager, Azure Key Vault, etc.)
 
 ## Contribuição
 Contribuições são bem-vindas! Leia o arquivo `CONTRIBUTING.md` para mais informações.
