@@ -5,6 +5,26 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/),
 e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.4.2] - 2025-07-30
+
+### Adicionado
+* Função global `handleAuthError()` para tratamento automático de erros de autenticação
+* Redirecionamento automático para página de login em caso de erro 401/403/422
+* Tratamento unificado de erros de autenticação em todas as operações CRUD
+
+### Melhorado
+* UX aprimorada: usuários são automaticamente redirecionados ao login quando tokens expiram
+* Eliminação da necessidade de navegação manual após falhas de autenticação
+* Limpeza automática de tokens e dados de usuário do localStorage
+
+### Corrigido
+* Imports relativos em `api/app.py` para permitir execução local
+* Tratamento inconsistente de erros de autenticação entre páginas
+
+### Técnico
+* Aplicação do padrão DRY (Don't Repeat Yourself) no tratamento de erros
+* Código mais maintível com função centralizada de tratamento de erros
+
 ## [1.4.1] - 2025-07-30
 
 ### Segurança
