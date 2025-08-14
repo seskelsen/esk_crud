@@ -1,0 +1,14 @@
+Contexto Padrão para GitHub Copilot – Projeto esk_crud
+
+Este projeto é um ERP simples e modular para pequenas e médias empresas, desenvolvido em Python (Flask) com persistência em MongoDB Atlas. O sistema oferece autenticação JWT, controle de acesso por perfil (admin/usuário), CRUD de fornecedores e usuários, validação de dados conforme normas (ex: CNPJ alfanumérico Febraban), e interface web responsiva (HTML/CSS/JS, migrando para React).
+
+Principais pontos:
+- Backend: Flask, MongoDB Atlas, JWT, bcrypt, variáveis de ambiente para segredos.
+- Frontend: HTML/CSS/JS puro, com migração planejada para React.
+- Testes automatizados com pytest.
+- Documentação OpenAPI/Swagger.
+- Monitoramento e controle via MongoDB Atlas.
+- Público-alvo: pequenas/médias empresas, equipes administrativas/tecnologia.
+- Foco em segurança, escalabilidade, facilidade de operação e expansão.
+
+Use este contexto para gerar código, documentação, testes e integrações aderentes à arquitetura e objetivos do projeto.
