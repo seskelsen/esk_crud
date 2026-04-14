@@ -74,15 +74,18 @@
 5. Configure a URI do MongoDB em `.env` (obrigatório):
 5. Configure a URI do MongoDB em `.env` (obrigatório):
    ```env
-   MONGO_URI="mongodb+srv://<usuario>:<senha>@<cluster>.mongodb.net/eskcrud?retryWrites=true&w=majority&appName=Cluster0"
+   MONGO_URI=mongodb+srv://<usuario>:<senha_forte>@<seu-cluster>.mongodb.net/eskcrud?retryWrites=true&w=majority&appName=Cluster0
    ```
+
+   > ⚠️ **IMPORTANTE:** Nunca compartilhe sua URI do MongoDB ou credenciais em repositórios públicos.
 
    **Como obter a URI do MongoDB Atlas:**
    1. Crie uma conta gratuita em https://www.mongodb.com/cloud/atlas
    2. Crie um novo cluster (pode ser gratuito - M0 Sandbox).
    3. Crie um usuário de banco de dados e defina uma senha forte.
-   4. Libere o acesso à sua faixa de IP (ou 0.0.0.0/0 para testes).
+   4. Libere o acesso à sua faixa de IP (ou 0.0.0.0/0 para testes - apenas desenvolvimento).
    5. No painel do Atlas, clique em "Connect" > "Connect your application" e copie a URI sugerida.
+   6. Copie o valor completo para sua arquivo `.env` (não commit no git).
    6. Substitua `<usuario>`, `<senha>` e `<cluster>` na string acima pelos dados do seu cluster.
 
    Exemplo de URI:

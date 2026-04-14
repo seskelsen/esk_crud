@@ -1,9 +1,13 @@
 import json
+import os
 from pymongo import MongoClient
 from pathlib import Path
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Configuração da URI do MongoDB Atlas
-MONGO_URI = "mongodb+srv://eskcrud:Zlw4D0vPDFIdyK5n@cluster0.bkriwyh.mongodb.net/eskcrud?retryWrites=true&w=majority&appName=Cluster0"
+MONGO_URI = os.getenv("MONGO_URI", "mongodb+srv://localhost:27017/eskcrud")
 
 # Caminho do arquivo JSON de usuários
 json_path = Path("db/users.json")
