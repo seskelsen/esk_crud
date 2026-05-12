@@ -1,6 +1,8 @@
 from flask import Flask, request, jsonify, send_from_directory, redirect
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 from marshmallow import Schema, fields, validate, ValidationError
 from .supplier_mongo import Supplier
 from .user_mongo import User
@@ -10,6 +12,7 @@ from flask_wtf.csrf import CSRFProtect
 from flask_swagger_ui import get_swaggerui_blueprint
 import secrets
 import logging
+import re
 from datetime import timedelta
 from functools import wraps
 import os
@@ -17,25 +20,54 @@ import yaml
 from .validators import CNPJValidator
 from dotenv import load_dotenv
 
+
 # Carregar variáveis de ambiente do arquivo .env
 load_dotenv()
 
-# Configurar logging
-logging.basicConfig(
-    level=logging.DEBUG,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.StreamHandler(),
-    ]
+
+# ============================================================================
+# Logger customizado que sanitiza headers sensíveis
+# ============================================================================
+
+class SanitizedFormatter(logging.Formatter):
+    """Formatter que mascara tokens JWT e credenciais sensíveis nos logs."""
+    
+    # Padrão para detectar tokens JWT (começa com "eyJ")
+    JWT_PATTERN = re.compile(r'eyJ[A-Za-z0-9_-]+')
+    # Padrão para Authorization header
+    AUTH_PATTERN = re.compile(r'Authorization["\']?\s*:\s*["\']?Bearer\s+[^\s"\']+')
+    
+    def format(self, record):
+        msg = super().format(record)
+        # Mascarar tokens JWT
+        msg = self.JWT_PATTERN.sub(lambda m: m.group(0)[:10] + '...[REDACTED]', msg)
+        # Mascarar Authorization header
+        msg = self.AUTH_PATTERN.sub('Authorization: Bearer [REDACTED]', msg)
+        return msg
+
+
+# Configurar logging com formatter customizado
+log_handler = logging.StreamHandler()
+log_formatter = SanitizedFormatter(
+    '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
+log_handler.setFormatter(log_formatter)
+
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
+logger.addHandler(log_handler)
 
 # Log handler para werkzeug
 werkzeug_logger = logging.getLogger('werkzeug')
 werkzeug_logger.setLevel(logging.DEBUG)
+werkzeug_logger.handlers.clear()
+werkzeug_logger.addHandler(log_handler)
 
 logger.info("Inicializando aplicação Flask com MongoDB")
+
+# ============================================================================
+# Configuração inicial
+# ============================================================================
 
 # Configurar Swagger
 SWAGGER_URL = '/api/docs'
@@ -47,13 +79,24 @@ class SupplierSchema(Schema):
     email = fields.Email(required=True)
     phone = fields.Str(required=True)
 
-CORS_ORIGINS = ["http://localhost:5000", "http://127.0.0.1:5000"]
+
 app = Flask(__name__, static_folder='../frontend', static_url_path='/frontend')
 app.config["MONGO_URI"] = config.MONGO_URI
+
 mongo = PyMongo(app)
 
-# Configuração do CORS - habilita para todas as origens
-CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
+# ============================================================================
+# CORS: Configuração restritiva por ambiente
+# ============================================================================
+CORS(
+    app,
+    resources={r"/*": {"origins": config.ALLOWED_ORIGINS}},
+    supports_credentials=True,
+    allow_headers=["Content-Type", "Authorization", "X-CSRFToken"],
+    expose_headers=["Content-Type"],
+    methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    max_age=3600
+)
 
 # Configurar Swagger UI
 swaggerui_blueprint = get_swaggerui_blueprint(
@@ -65,18 +108,25 @@ swaggerui_blueprint = get_swaggerui_blueprint(
 )
 app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
 
-# Middleware para log de requisições
+# ============================================================================
+# Middleware para logging com sanitização
+# ============================================================================
+
 @app.before_request
 def log_request_info():
+    """Log de requisições com headers sensíveis sanitizados."""
     logger.debug('Request Headers: %s', request.headers)
     logger.debug('Request Body: %s', request.get_data())
 
-# Middleware para log de respostas
 @app.after_request
 def log_response_info(response):
+    """Log de resposta (sem corpo para evitar dados sensíveis)."""
     logger.debug('Response Status: %s', response.status)
-    # Não logamos o corpo da resposta para evitar dados sensíveis ou respostas muito grandes
     return response
+
+# ============================================================================
+# Rota para servir documentação Swagger
+# ============================================================================
 
 # Rota para servir o arquivo swagger.json
 @app.route('/api/swagger.json')
@@ -85,22 +135,111 @@ def serve_swagger_spec():
         spec = yaml.safe_load(f)
     return jsonify(spec)
 
+# ============================================================================
 # Configuração de segurança
+# ============================================================================
+
 app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY', secrets.token_hex(32))
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=1)
 app.config['WTF_CSRF_SECRET_KEY'] = os.getenv('WTF_CSRF_SECRET_KEY', secrets.token_hex(32))
-app.config['WTF_CSRF_ENABLED'] = False  # Desabilitado temporariamente para testes
 
+# CSRF: Desabilitado em TESTING e desenvolvimento, habilitado em produção
+# ENABLE_CSRF controla se CSRF está ativo (padrão: False em dev/test, True em prod)
+ENABLE_CSRF = os.getenv('ENABLE_CSRF', 'false').lower() == 'true'
+app.config['WTF_CSRF_ENABLED'] = ENABLE_CSRF
+logger.info(f"CSRF habilitado: {ENABLE_CSRF}")
+
+# ============================================================================
+# Security Headers Middleware
+# ============================================================================
+
+@app.after_request
+def add_security_headers(response):
+    """Adiciona headers de segurança padrão."""
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    response.headers['X-Frame-Options'] = 'SAMEORIGIN'
+    response.headers['X-XSS-Protection'] = '1; mode=block'
+    # CSP: Permitir conteúdo do próprio domínio e CDNs confiáveis
+    response.headers['Content-Security-Policy'] = (
+        "default-src 'self'; "
+        "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; "
+        "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; "
+        "font-src 'self' https://cdn.jsdelivr.net https://frontend-cdn.perplexity.ai https://fonts.gstatic.com; "
+        "img-src 'self' data: https:; "
+        "connect-src 'self' https://cdn.jsdelivr.net"
+    )
+    # HSTS apenas em produção (HTTPS e não TESTING)
+    if not app.config.get('DEBUG', False) and not app.config.get('TESTING', False):
+        response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
+    return response
+
+# ============================================================================
 # Inicializar extensões
+# ============================================================================
+
 jwt = JWTManager(app)
 csrf = CSRFProtect(app)
+
+# ============================================================================
+# Rate Limiting
+# ============================================================================
+
+# Criar limiter sempre, mas será desabilitado em TESTING
+limiter = Limiter(
+    app=app,
+    key_func=get_remote_address,
+    default_limits=["200 per day", "50 per hour"],
+    storage_uri="memory://",  # Em produção, usar Redis
+    in_memory_fallback_enabled=True
+)
+
+# Desabilitar rate limiting em modo TESTING
+@app.before_request
+def disable_limiter_if_testing():
+    """Desabilita rate limiting quando app está em modo TESTING."""
+    if app.config.get('TESTING', False):
+        limiter.enabled = False
+    else:
+        limiter.enabled = True
+
+logger.info("Rate limiting inicializado (será desabilitado em TESTING)")
 
 # Instanciar modelos (agora ambos usam MongoDB)
 supplier = Supplier(mongo)
 user = User(mongo)
 
+# ============================================================================
+# Seed: garante que a collection de usuários não fique vazia
+# ============================================================================
+
+def _seed_users():
+    """Importa usuários do users.json para o MongoDB se a collection estiver vazia."""
+    try:
+        if mongo.db.users.count_documents({}) > 0:
+            return
+        json_path = os.path.join(os.path.dirname(__file__), '..', 'db', 'users.json')
+        if not os.path.exists(json_path):
+            logger.warning("db/users.json não encontrado — seed de usuários ignorado")
+            return
+        import json as _json
+        with open(json_path, 'r', encoding='utf-8') as f:
+            users_data = _json.load(f)
+        count = 0
+        for u in users_data.values():
+            u.pop('id', None)
+            if not mongo.db.users.find_one({'username': u['username']}):
+                mongo.db.users.insert_one(u)
+                count += 1
+        logger.info(f"Seed de usuários: {count} usuário(s) importado(s) do users.json")
+    except Exception as e:
+        logger.error(f"Erro no seed de usuários: {e}")
+
+with app.app_context():
+    _seed_users()
+
 # Rotas de autenticação
 @app.route('/auth/login', methods=['POST'])
+@limiter.limit("10 per minute")  # Rate limiting: máximo 10 tentativas/minuto
 def login():
     """Login de usuário"""
     try:
@@ -143,6 +282,7 @@ def login():
         return {'success': False, 'message': 'Erro interno no servidor'}, 500
 
 @app.route('/auth/register', methods=['POST'])
+@limiter.limit("5 per minute")  # Rate limiting: máximo 5 registros/minuto
 def register():
     """Registro de novo usuário"""
     try:
@@ -346,6 +486,19 @@ def delete_supplier(id):
 @app.route('/')
 def root():
     return redirect('/frontend/index.html')
+
+# Favicon simples (ícone vazio para evitar erro 404)
+@app.route('/favicon.ico')
+def favicon():
+    from flask import Response
+    # Retorna um favicon vazio (1x1 pixel transparente)
+    favicon_data = (
+        b'\x00\x00\x01\x00\x01\x00\x10\x10\x00\x00\x01\x00 \x00h\x04\x00\x00'
+        b'\x16\x00\x00\x00(\x00\x00\x00\x10\x00\x00\x00 \x00\x00\x00\x01\x00'
+        b' \x00\x00\x00\x00\x00\x00\x04\x00\x00\xc3\x0e\x00\x00\xc3\x0e\x00\x00'
+        b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+    )
+    return Response(favicon_data, mimetype='image/x-icon')
 
 if __name__ == '__main__':
     app.run(port=5000)

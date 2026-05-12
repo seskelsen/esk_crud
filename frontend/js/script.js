@@ -4,6 +4,7 @@ let currentSupplier = null;
 let suppliers = {};
 let currentSearchTerm = '';
 let currentSortField = 'name';
+let lastFocusedElement = null;
 
 document.addEventListener('DOMContentLoaded', () => {
     // Check if user is logged in
@@ -17,6 +18,13 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Inicializar componentes
     initializeComponents();
+    initializeModalAccessibility();
+
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+        searchInput.value = '';
+    }
+    currentSearchTerm = '';
     
     // Carregar dados
     loadSuppliers();
@@ -206,6 +214,7 @@ function filterAndSortSuppliers() {
     }
     
     renderSuppliers(filteredSuppliers);
+    updateSearchSummary(filteredSuppliers.length);
 }
 
 function filterSuppliers(searchTerm) {
@@ -254,6 +263,7 @@ function formatPhone(phone) {
 
 function openModal(supplier = null) {
     console.log('Abrindo modal com fornecedor:', supplier);
+    lastFocusedElement = document.activeElement;
     currentSupplier = supplier;
     const form = document.getElementById('supplierForm');
     form.reset();
@@ -437,9 +447,50 @@ function updateTotalCount(count = 0) {
     totalElement.textContent = mensagem;
 }
 
+function updateSearchSummary(visibleCount = 0) {
+    const summaryElement = document.getElementById('searchResultInfo');
+    if (!summaryElement) {
+        return;
+    }
+
+    const totalCount = Array.isArray(suppliers)
+        ? suppliers.length
+        : (suppliers && typeof suppliers === 'object' ? Object.values(suppliers).length : 0);
+
+    if (!currentSearchTerm) {
+        summaryElement.textContent = `${totalCount} ${totalCount === 1 ? 'registro disponível' : 'registros disponíveis'}`;
+        return;
+    }
+
+    summaryElement.textContent = visibleCount > 0
+        ? `${visibleCount} ${visibleCount === 1 ? 'resultado encontrado' : 'resultados encontrados'} para "${currentSearchTerm}"`
+        : `Nenhum resultado para "${currentSearchTerm}"`;
+}
+
 function validateCNPJ(cnpj) {
     const regex = /^[a-zA-Z0-9]{14,20}$/; // Aceitar alfanumérico
     return regex.test(cnpj);
+}
+
+function initializeModalAccessibility() {
+    const supplierModalElement = document.getElementById('supplierModal');
+    if (!supplierModalElement) {
+        return;
+    }
+
+    supplierModalElement.addEventListener('shown.bs.modal', () => {
+        const firstInput = document.getElementById('name');
+        if (firstInput) {
+            firstInput.focus();
+        }
+    });
+
+    supplierModalElement.addEventListener('hidden.bs.modal', () => {
+        if (lastFocusedElement && typeof lastFocusedElement.focus === 'function') {
+            lastFocusedElement.focus();
+        }
+        lastFocusedElement = null;
+    });
 }
 
 async function saveSupplier() {
@@ -538,7 +589,7 @@ async function deleteSupplier(id) {
             text: 'Deseja realmente excluir este fornecedor?',
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonText: 'Sim, excluir',
+            confirmButtonText: 'Continuar',
             cancelButtonText: 'Cancelar',
             confirmButtonColor: '#dc3545',
             cancelButtonColor: '#6c757d',
@@ -546,6 +597,22 @@ async function deleteSupplier(id) {
         });
 
         if (result.isConfirmed) {
+            const finalConfirmation = await Swal.fire({
+                title: 'Ação irreversível',
+                text: 'Esta exclusão não pode ser desfeita. Confirma a remoção?',
+                icon: 'error',
+                showCancelButton: true,
+                confirmButtonText: 'Excluir definitivamente',
+                cancelButtonText: 'Voltar',
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                focusCancel: true
+            });
+
+            if (!finalConfirmation.isConfirmed) {
+                return;
+            }
+
             showLoading();
             try {
                 console.log(`Enviando requisição DELETE para ${API_URL}/suppliers/${id}`);

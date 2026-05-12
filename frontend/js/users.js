@@ -1,6 +1,9 @@
 const API_URL = 'http://localhost:5000';
 let userModal;
 let currentUser = null;
+let usersData = [];
+let currentUserSearchTerm = '';
+let lastFocusedElement = null;
 
 // Page initialization
 document.addEventListener('DOMContentLoaded', () => {
@@ -18,6 +21,8 @@ document.addEventListener('DOMContentLoaded', () => {
     setupUI();
     userModal = new bootstrap.Modal(document.getElementById('userModal'));
     initializeFormValidation();
+    initializeUserSearch();
+    initializeModalAccessibility();
     loadUsers();
 });
 
@@ -72,6 +77,20 @@ function initializeFormValidation() {
     }, false);
 }
 
+function initializeUserSearch() {
+    const searchInput = document.getElementById('userSearchInput');
+    if (!searchInput) {
+        return;
+    }
+
+    searchInput.value = '';
+    currentUserSearchTerm = '';
+    searchInput.addEventListener('input', (event) => {
+        currentUserSearchTerm = event.target.value.trim().toLowerCase();
+        applyUserFilters();
+    });
+}
+
 // Include the handleAuthError function from script.js
 function handleAuthError(response) {
     if (response.status === 401 || response.status === 403 || response.status === 422) {
@@ -100,7 +119,8 @@ async function loadUsers() {
         if (!response.ok) throw new Error(`Status ${response.status}`);
         const result = await response.json();
         if (result.success) {
-            renderUsers(Object.values(result.data));
+            usersData = Object.values(result.data || {});
+            applyUserFilters();
         } else {
             throw new Error(result.message);
         }
@@ -112,9 +132,27 @@ async function loadUsers() {
     }
 }
 
+function applyUserFilters() {
+    const safeUsers = Array.isArray(usersData) ? usersData : [];
+    const filteredUsers = safeUsers.filter((user) => {
+        if (!currentUserSearchTerm) {
+            return true;
+        }
+
+        const usernameMatch = user.username && user.username.toLowerCase().includes(currentUserSearchTerm);
+        const emailMatch = user.email && user.email.toLowerCase().includes(currentUserSearchTerm);
+        const roleMatch = user.role && user.role.toLowerCase().includes(currentUserSearchTerm);
+        return usernameMatch || emailMatch || roleMatch;
+    });
+
+    renderUsers(filteredUsers);
+    updateUsersSummary(filteredUsers.length, safeUsers.length);
+}
+
 function renderUsers(list) {
     const tbody = document.getElementById('usersList');
     tbody.innerHTML = '';
+    updateUsersCount(list.length);
     if (!list.length) {
         tbody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-muted">Nenhum usuário encontrado</td></tr>`;
         return;
@@ -139,7 +177,34 @@ function renderUsers(list) {
     });
 }
 
+function updateUsersCount(count = 0) {
+    const totalUsersElement = document.getElementById('totalUsers');
+    if (!totalUsersElement) {
+        return;
+    }
+
+    const total = Math.max(0, parseInt(count, 10) || 0);
+    totalUsersElement.textContent = total === 1 ? '1 usuário' : `${total} usuários`;
+}
+
+function updateUsersSummary(visibleCount = 0, totalCount = 0) {
+    const summaryElement = document.getElementById('usersSearchResultInfo');
+    if (!summaryElement) {
+        return;
+    }
+
+    if (!currentUserSearchTerm) {
+        summaryElement.textContent = `${totalCount} ${totalCount === 1 ? 'registro disponível' : 'registros disponíveis'}`;
+        return;
+    }
+
+    summaryElement.textContent = visibleCount > 0
+        ? `${visibleCount} ${visibleCount === 1 ? 'resultado encontrado' : 'resultados encontrados'} para "${currentUserSearchTerm}"`
+        : `Nenhum resultado para "${currentUserSearchTerm}"`;
+}
+
 function openModal(user = null) {
+    lastFocusedElement = document.activeElement;
     currentUser = user;
     const form = document.getElementById('userForm');
     form.reset();
@@ -224,6 +289,23 @@ async function saveUser() {
     } finally {
         hideLoading();
     }
+}
+
+function initializeModalAccessibility() {
+    const userModalElement = document.getElementById('userModal');
+    if (!userModalElement) return;
+
+    userModalElement.addEventListener('shown.bs.modal', () => {
+        const firstInput = document.getElementById('username');
+        if (firstInput) firstInput.focus();
+    });
+
+    userModalElement.addEventListener('hidden.bs.modal', () => {
+        if (lastFocusedElement && typeof lastFocusedElement.focus === 'function') {
+            lastFocusedElement.focus();
+        }
+        lastFocusedElement = null;
+    });
 }
 
 async function deleteUser(id) {
